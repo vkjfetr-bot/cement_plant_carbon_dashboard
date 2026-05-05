@@ -1,0 +1,438 @@
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  .dash{font-family:var(--font-sans,'Inter',sans-serif);background:#fff;color:var(--color-text-primary,#1a1a1a);}
+  .sidebar{position:fixed;top:0;left:0;width:196px;height:100vh;background:#fff;border-right:0.5px solid #e0e0e0;display:flex;flex-direction:column;z-index:100;padding:24px 0 16px;}
+  .logo-mark{font-size:13px;font-weight:500;color:#111;letter-spacing:0.04em;}
+  .logo-sub{font-size:10px;color:#999;margin-top:2px;letter-spacing:0.05em;}
+  .nav{flex:1;padding:14px 0;}
+  .nav-item{display:flex;align-items:center;gap:9px;padding:9px 20px;font-size:12.5px;color:#777;cursor:pointer;border-left:2px solid transparent;}
+  .nav-item:hover{background:#f7f7f7;color:#111;}
+  .nav-item.active{color:#111;font-weight:500;border-left:2px solid #111;background:#f9f9f9;}
+  .nav-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:0.4;}
+  .nav-item.active .nav-dot{opacity:1;background:#2563eb;}
+  .sf-label{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:0.07em;}
+  .sf-val{font-size:12px;font-weight:500;color:#444;margin-top:2px;}
+  .main{margin-left:196px;min-height:100vh;background:#f7f7f7;padding:26px 28px;}
+  .page{display:none;}
+  .page.active{display:block;}
+  .ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;}
+  .pt{font-size:19px;font-weight:500;color:#111;}
+  .ps{font-size:11.5px;color:#999;margin-top:3px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+  .kpi{background:#fff;border:0.5px solid #e5e5e5;border-radius:10px;padding:16px 18px;}
+  .kl{font-size:10.5px;color:#999;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:7px;}
+  .kv{font-size:25px;font-weight:500;color:#111;line-height:1;}
+  .ku{font-size:11.5px;color:#aaa;margin-top:4px;}
+  .row2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:16px;}
+  .row3{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+  .card{background:#fff;border:0.5px solid #e5e5e5;border-radius:10px;padding:18px 20px;}
+  .ct{font-size:11px;font-weight:500;color:#666;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:14px;}
+  .cw{position:relative;width:100%;height:210px;}
+  .src-row{display:flex;flex-direction:column;gap:10px;}
+  .src-item{display:grid;grid-template-columns:100px 1fr 44px;align-items:center;gap:10px;font-size:12px;}
+  .src-nm{color:#444;font-weight:500;}
+  .bar-bg{height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease;}
+  .src-pct{text-align:right;font-size:11px;color:#777;}
+  .sep{height:0.5px;background:#f0f0f0;margin:14px 0;}
+  .info-row{font-size:11.5px;color:#888;line-height:1.8;}
+  .dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
+  .dg{background:#16a34a;} .dw{background:#d97706;} .dr{background:#dc2626;}
+  .itbl{width:100%;font-size:12px;border-collapse:collapse;}
+  .itbl th{text-align:left;font-size:10.5px;font-weight:500;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;padding:0 0 8px;}
+  .itbl td{padding:7px 0;color:#333;border-top:0.5px solid #f2f2f2;}
+  .itbl td:last-child{text-align:right;font-weight:500;}
+  .cbox{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .ci{background:#f5f5f5;border-radius:8px;padding:13px 15px;}
+  .ci.hl{background:#eff6ff;}
+  .cn{font-size:21px;font-weight:500;color:#111;}
+  .cl{font-size:11px;color:#888;margin-top:2px;}
+  .pb{display:flex;justify-content:space-between;font-size:11px;color:#777;margin-bottom:4px;}
+  .pbg{height:7px;background:#eee;border-radius:4px;overflow:hidden;}
+  .pf{height:100%;border-radius:4px;background:#2563eb;}
+  .ins-list{display:flex;flex-direction:column;gap:10px;}
+  .ins{border-left:3px solid #e0e0e0;padding:10px 14px;border-radius:0 8px 8px 0;background:#fafafa;}
+  .ins.cr{border-left-color:#dc2626;background:#fff8f8;}
+  .ins.wn{border-left-color:#d97706;background:#fffbf0;}
+  .ins.ok{border-left-color:#16a34a;background:#f6fef9;}
+  .ih{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+  .itg{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;}
+  .itg.cr{color:#dc2626;} .itg.wn{color:#d97706;} .itg.ok{color:#16a34a;}
+  .its{font-size:10px;color:#bbb;}
+  .it{font-size:12.5px;font-weight:500;color:#222;margin-bottom:3px;}
+  .ib{font-size:11.5px;color:#666;line-height:1.55;}
+  .ia{font-size:11px;color:#2563eb;margin-top:5px;font-weight:500;}
+  .mth-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .mc{background:#fff;border:0.5px solid #e5e5e5;border-radius:8px;padding:14px 16px;}
+  .ml{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#aaa;margin-bottom:5px;}
+  .mv{font-size:13px;font-weight:500;color:#222;margin-bottom:2px;}
+  .ms{font-size:11px;color:#bbb;}
+  .pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .pill{font-size:11px;font-weight:500;padding:4px 11px;border-radius:20px;}
+  .pg{background:#f0fdf4;color:#16a34a;border:0.5px solid #bbf7d0;}
+  .pb2{background:#eff6ff;color:#2563eb;border:0.5px solid #bfdbfe;}
+  .tab-bar{display:flex;border-bottom:0.5px solid #e5e5e5;margin-bottom:18px;}
+  .tab{font-size:12px;padding:8px 16px;color:#999;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .tab:hover{color:#333;}
+  .tab.active{color:#111;font-weight:500;border-bottom:2px solid #111;}
+  .mono{font-family:var(--font-mono,monospace);font-size:11.5px;color:#555;}
+</style>
+
+<div class="dash">
+<div class="sidebar">
+  <div style="padding:0 20px 20px;border-bottom:0.5px solid #eee;">
+    <div class="logo-mark">Carbon Emission</div>
+    <div class="logo-sub">Cement Plant</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-item active" onclick="showPage('overview',this)"><span class="nav-dot"></span>Overview</div>
+    <div class="nav-item" onclick="showPage('sources',this)"><span class="nav-dot"></span>Emission Sources</div>
+    <div class="nav-item" onclick="showPage('credits',this)"><span class="nav-dot"></span>Carbon Credit</div>
+    <div class="nav-item" onclick="showPage('insights',this)"><span class="nav-dot"></span>Insights</div>
+    <div class="nav-item" onclick="showPage('methodology',this)"><span class="nav-dot"></span>Methodology</div>
+  </nav>
+  <div style="padding:14px 20px;border-top:0.5px solid #eee;">
+    <div class="sf-label">System boundary</div>
+    <div class="sf-val">Operational control</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- OVERVIEW -->
+  <div class="page active" id="page-overview">
+    <div class="ph">
+      <div><div class="pt">Overview</div><div class="ps">GHG Protocol · IPCC · CEA · UNFCCC CDM</div></div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kl">Total emission</div><div class="kv" id="kv-total">78.9</div><div class="ku">tCO₂/day</div></div>
+      <div class="kpi"><div class="kl">Baseline emission</div><div class="kv">95.0</div><div class="ku">tCO₂/day</div></div>
+      <div class="kpi"><div class="kl">Emission reduction</div><div class="kv" id="kv-red">16.1</div><div class="ku">tCO₂/day</div></div>
+      <div class="kpi" style="background:#eff6ff;border-color:#bfdbfe;"><div class="kl" style="color:#2563eb;">Annual credit</div><div class="kv" style="color:#2563eb;">5,796</div><div class="ku" style="color:#6b7280;">credits/year</div></div>
+    </div>
+    <div class="row2">
+      <div class="card">
+        <div class="ct">Emission trend</div>
+        <div class="cw"><canvas id="trendChart" role="img" aria-label="Emission trend over 24 hours around 78.9 tCO2/day">Emission trend</canvas></div>
+      </div>
+      <div class="card">
+        <div class="ct">Source share</div>
+        <div class="src-row" style="margin-top:6px;">
+          <div class="src-item">
+            <span class="src-nm">Coal</span>
+            <div class="bar-bg"><div class="bar-fill" id="bc" style="width:47%;background:#1d4ed8;"></div></div>
+            <span class="src-pct" id="pc">47%</span>
+          </div>
+          <div class="src-item">
+            <span class="src-nm">Electricity</span>
+            <div class="bar-bg"><div class="bar-fill" id="be" style="width:52%;background:#7c3aed;"></div></div>
+            <span class="src-pct" id="pe">52%</span>
+          </div>
+          <div class="src-item">
+            <span class="src-nm">Diesel</span>
+            <div class="bar-bg"><div class="bar-fill" id="bd" style="width:1%;background:#d97706;"></div></div>
+            <span class="src-pct" id="pd">1%</span>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="info-row">
+          <div><span class="dot dg"></span>Specific emission: <strong>0.0789</strong> tCO₂/ton cement</div>
+          <div><span class="dot dg"></span>Performance ratio: <strong>0.83</strong> (actual/baseline)</div>
+          <div><span class="dot dw"></span>Monthly emission: <strong>2,367</strong> tCO₂/month</div>
+        </div>
+      </div>
+    </div>
+    <div class="row3">
+      <div class="card">
+        <div class="ct">Intensity metrics</div>
+        <table class="itbl">
+          <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td><span class="dot dg"></span>Specific emission</td><td>0.0789 tCO₂/ton</td></tr>
+            <tr><td><span class="dot dw"></span>Electricity intensity</td><td>50 kWh/ton</td></tr>
+            <tr><td><span class="dot dg"></span>Thermal energy intensity</td><td>0.4 GJ/ton</td></tr>
+            <tr><td><span class="dot dg"></span>Coal intensity</td><td>0.02 ton/ton</td></tr>
+            <tr><td><span class="dot dg"></span>Production</td><td>1,000 ton/day</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="ct">Carbon credit summary</div>
+        <div class="cbox">
+          <div class="ci"><div class="cn">16.1</div><div class="cl">Daily credit</div></div>
+          <div class="ci"><div class="cn">483</div><div class="cl">Monthly credit</div></div>
+          <div class="ci hl"><div class="cn" style="color:#2563eb;">5,796</div><div class="cl">Annual credit</div></div>
+          <div class="ci"><div class="cn">17%</div><div class="cl">Efficiency gain</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMISSION SOURCES -->
+  <div class="page" id="page-sources">
+    <div class="ph"><div><div class="pt">Emission sources</div><div class="ps">Scope 1: Coal + Diesel · Scope 2: Grid electricity</div></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div class="kpi" style="border-top:3px solid #1d4ed8;">
+        <div class="kl">Coal — Scope 1</div>
+        <div class="kv" id="kv-coal">37.1</div><div class="ku">tCO₂/day</div>
+        <div style="font-size:11px;color:#aaa;margin-top:6px;">20 ton/day · 400 GJ · 0.4 TJ</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid #7c3aed;">
+        <div class="kl">Grid electricity — Scope 2</div>
+        <div class="kv" id="kv-elec">41.0</div><div class="ku">tCO₂/day</div>
+        <div style="font-size:11px;color:#aaa;margin-top:6px;">50,000 kWh/day · EF 0.82 kg/kWh</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid #d97706;">
+        <div class="kl">Diesel — Scope 1</div>
+        <div class="kv" id="kv-diesel">0.804</div><div class="ku">tCO₂/day</div>
+        <div style="font-size:11px;color:#aaa;margin-top:6px;">300 L/day · EF 2.68 kg/L</div>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="card">
+        <div class="ct">Source trend</div>
+        <div class="cw"><canvas id="splitChart" role="img" aria-label="Coal, electricity and diesel emissions over 24 hours">Source trend</canvas></div>
+      </div>
+      <div class="card">
+        <div class="ct">Emission factors</div>
+        <table class="itbl">
+          <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Coal NCV</td><td>20 GJ/ton</td></tr>
+            <tr><td>Carbon content</td><td>25.8 tC/TJ</td></tr>
+            <tr><td>Oxidation factor</td><td>0.98</td></tr>
+            <tr><td>CO₂ conversion</td><td>44/12</td></tr>
+            <tr><td>Diesel EF</td><td>2.68 kg CO₂/L</td></tr>
+            <tr><td>Electricity EF (CEA)</td><td>0.82 kg CO₂/kWh</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARBON CREDIT -->
+  <div class="page" id="page-credits">
+    <div class="ph"><div><div class="pt">Carbon credit</div><div class="ps">UNFCCC CDM AMS-II.D · BEE PAT + CDM datasets · 1 tCO₂ = 1 credit</div></div></div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kl">Baseline emission</div><div class="kv">95.0</div><div class="ku">tCO₂/day</div></div>
+      <div class="kpi"><div class="kl">Total emission</div><div class="kv" id="kv-act2">78.9</div><div class="ku">tCO₂/day</div></div>
+      <div class="kpi"><div class="kl">Emission reduction</div><div class="kv" id="kv-red2">16.1</div><div class="ku">tCO₂/day</div></div>
+      <div class="kpi" style="background:#eff6ff;border-color:#bfdbfe;"><div class="kl" style="color:#2563eb;">Annual credit</div><div class="kv" style="color:#2563eb;">5,796</div><div class="ku" style="color:#6b7280;">credits/year</div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="ct">Baseline vs actual emission</div>
+      <div class="cw" style="height:200px;"><canvas id="baseChart" role="img" aria-label="Bar chart baseline 95 vs actual 78.9 tCO2/day">Baseline vs actual</canvas></div>
+    </div>
+    <div class="row3">
+      <div class="card">
+        <div class="ct">Credit schedule</div>
+        <table class="itbl">
+          <thead><tr><th>Period</th><th>Credits</th></tr></thead>
+          <tbody>
+            <tr><td>Daily credit</td><td>16.1</td></tr>
+            <tr><td>Monthly credit</td><td>483</td></tr>
+            <tr><td>Annual credit</td><td>5,796</td></tr>
+            <tr><td>Baseline monthly</td><td>2,850 tCO₂</td></tr>
+            <tr><td>Monthly emission</td><td>2,367 tCO₂</td></tr>
+            <tr><td>Annual reduction</td><td>5,796 tCO₂</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="ct">Performance</div>
+        <div style="display:flex;flex-direction:column;gap:13px;margin-top:4px;">
+          <div><div class="pb"><span>Performance ratio (0.83)</span><span>83%</span></div><div class="pbg"><div class="pf" style="width:83%;background:#7c3aed;"></div></div></div>
+          <div><div class="pb"><span>Efficiency gain</span><span>17%</span></div><div class="pbg"><div class="pf" style="width:17%;background:#16a34a;"></div></div></div>
+          <div><div class="pb"><span>Emission reduction per ton</span><span>0.0161 tCO₂/ton</span></div><div class="pbg"><div class="pf" style="width:17%;background:#1d4ed8;"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="page" id="page-insights">
+    <div class="ph"><div><div class="pt">Insights</div><div class="ps">Root cause · Remedial action · Timestamp</div></div></div>
+    <div class="ins-list">
+      <div class="ins wn">
+        <div class="ih"><span class="itg wn">Warning</span><span class="its" id="ts1">—</span></div>
+        <div class="it">Grid electricity is dominant source at 52%</div>
+        <div class="ib">Electricity CO₂ (41 tCO₂/day) exceeds coal CO₂ (37.1 tCO₂/day). Root cause: CEA India grid EF of 0.82 kg CO₂/kWh reflects a coal-heavy national grid. Electricity intensity is 50 kWh/ton.</div>
+        <div class="ia">Action: Evaluate on-site renewable or PPA. 10% grid substitution saves ~4.1 tCO₂/day and adds ~49 credits/month.</div>
+      </div>
+      <div class="ins cr">
+        <div class="ih"><span class="itg cr">Critical</span><span class="its" id="ts2">—</span></div>
+        <div class="it">Coal NCV uses IPCC default — no site-verified value</div>
+        <div class="ib">Coal CO₂ calculation uses default NCV of 20 GJ/ton. Actual coal NCV varies by supplier lot. Root cause: absence of proximate analysis. This introduces uncertainty in the 37.1 tCO₂/day figure — a CDM audit risk.</div>
+        <div class="ia">Action: Commission proximate analysis per ISO 13909 within 30 days. Assign to energy manager.</div>
+      </div>
+      <div class="ins ok">
+        <div class="ih"><span class="itg ok">Positive</span><span class="its" id="ts3">—</span></div>
+        <div class="it">Plant is 17% below CDM sector benchmark — credit eligible</div>
+        <div class="ib">Specific emission of 0.0789 tCO₂/ton is below the benchmark of 0.095 tCO₂/ton. All inputs are measured (not estimated). IPCC + CDM methodology applied. GHG Protocol scope classification confirmed.</div>
+        <div class="ia">Action: Initiate CDM/VCS project registration. Prepare MRV report. 5,796 credits/year eligible.</div>
+      </div>
+      <div class="ins wn">
+        <div class="ih"><span class="itg wn">Warning</span><span class="its" id="ts4">—</span></div>
+        <div class="it">Thermal energy intensity at 0.4 GJ/ton — room to improve</div>
+        <div class="ib">Global best practice for dry-process kilns is 0.29–0.33 GJ/ton. Root cause may be kiln age, suboptimal combustion air ratio, or process type. Coal CO₂ is 37.1 tCO₂/day (47% of total).</div>
+        <div class="ia">Action: Conduct kiln shell heat loss audit. Review combustion air-to-fuel ratio. 10% improvement saves ~3.7 tCO₂/day.</div>
+      </div>
+      <div class="ins ok">
+        <div class="ih"><span class="itg ok">Info</span><span class="its" id="ts5">—</span></div>
+        <div class="it">Diesel contribution is 1% — no immediate action needed</div>
+        <div class="ib">Diesel CO₂ is 0.804 tCO₂/day from 300 L/day DG consumption. EF of 2.68 kg CO₂/L (IPCC default) applied. Data from DG tank meter — measured.</div>
+        <div class="ia">Action: No remediation required. Monitor if volume exceeds 600 L/day.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METHODOLOGY -->
+  <div class="page" id="page-methodology">
+    <div class="ph"><div><div class="pt">Methodology</div><div class="ps">Standards applied · Calculation steps · Compliance</div></div></div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="swTab(this,'ts')">Standards</div>
+      <div class="tab" onclick="swTab(this,'tc')">Calculation</div>
+      <div class="tab" onclick="swTab(this,'tv')">Verification</div>
+    </div>
+    <div id="ts">
+      <div class="mth-grid">
+        <div class="mc"><div class="ml">GHG Protocol</div><div class="mv">Operational control boundary</div><div class="ms">Scope 1 (coal + diesel) · Scope 2 (electricity)</div></div>
+        <div class="mc"><div class="ml">IPCC</div><div class="mv">Emission factors · Activity data</div><div class="ms">NCV 20 GJ/ton · 25.8 tC/TJ · OF 0.98 · 44/12</div></div>
+        <div class="mc"><div class="ml">Central Electricity Authority</div><div class="mv">Grid EF 0.82 kg CO₂/kWh</div><div class="ms">India national grid · CEA reporting</div></div>
+        <div class="mc"><div class="ml">UNFCCC CDM</div><div class="mv">AMS-II.D sector benchmark</div><div class="ms">Benchmark 0.095 tCO₂/ton · 1 tCO₂ = 1 credit</div></div>
+      </div>
+    </div>
+    <div id="tc" style="display:none;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card" style="padding:13px 16px;"><div style="font-size:12.5px;font-weight:500;color:#222;margin-bottom:5px;">Coal CO₂</div><div class="mono">Coal = 20,000 kg/day = 20 ton/day<br>Energy = 20 × 20 = 400 GJ = 0.4 TJ<br>CO₂ = 0.4 × 25.8 × 0.98 × (44/12) = 37.1 tCO₂/day</div></div>
+        <div class="card" style="padding:13px 16px;"><div style="font-size:12.5px;font-weight:500;color:#222;margin-bottom:5px;">Diesel CO₂</div><div class="mono">Diesel = 300 L/day × 2.68 kg/L = 804 kg = 0.804 tCO₂/day</div></div>
+        <div class="card" style="padding:13px 16px;"><div style="font-size:12.5px;font-weight:500;color:#222;margin-bottom:5px;">Electricity CO₂</div><div class="mono">Electricity = 50,000 kWh/day × 0.82 = 41,000 kg = 41.0 tCO₂/day</div></div>
+        <div class="card" style="padding:13px 16px;background:#f9f9f9;"><div style="font-size:12.5px;font-weight:500;color:#222;margin-bottom:5px;">Total emission · Baseline · Credit</div><div class="mono">Total = 37.1 + 0.804 + 41.0 = 78.9 tCO₂/day<br>Baseline = 1,000 × 0.095 = 95.0 tCO₂/day<br>Reduction = 95.0 − 78.9 = 16.1 tCO₂/day<br>Monthly = 16.1 × 30 = 483 · Annual = 483 × 12 = 5,796</div></div>
+      </div>
+    </div>
+    <div id="tv" style="display:none;">
+      <div class="card">
+        <table class="itbl">
+          <thead><tr><th>Verification check</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Energy vs production consistent</td><td><span class="dot dg"></span>Pass</td></tr>
+            <tr><td>All inputs measured, not estimated</td><td><span class="dot dg"></span>Pass</td></tr>
+            <tr><td>IPCC + CDM calculation method valid</td><td><span class="dot dg"></span>Pass</td></tr>
+            <tr><td>CDM monitoring frequency met</td><td><span class="dot dg"></span>Pass</td></tr>
+            <tr><td>GHG Protocol scope classification</td><td><span class="dot dg"></span>Pass</td></tr>
+            <tr><td>Meets carbon credit eligibility criteria</td><td><span class="dot dg"></span>Pass</td></tr>
+            <tr><td>Compliance status</td><td><span class="dot dg"></span>CDM eligible</td></tr>
+          </tbody>
+        </table>
+        <div class="pills" style="margin-top:14px;">
+          <span class="pill pg">GHG Protocol</span>
+          <span class="pill pb2">IPCC approved</span>
+          <span class="pill pg">CDM eligible</span>
+          <span class="pill pb2">CEA India</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  const B = {total:78.9,coal:37.1,elec:41.0,diesel:0.804};
+
+  function v(val){return val*(1+(Math.random()*2-1)*0.01);}
+
+  function showPage(id,el){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('page-'+id).classList.add('active');
+    el.classList.add('active');
+    if(id==='sources'&&!splitDone)initSplit();
+    if(id==='credits'&&!baseDone)initBase();
+  }
+
+  function swTab(el,id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    ['ts','tc','tv'].forEach(i=>{document.getElementById(i).style.display=i===id?'block':'none';});
+  }
+
+  const tLabels=[], tActual=[], tBase=[];
+  for(let i=23;i>=0;i--){tLabels.push(i===0?'Now':`${i}h`);tActual.push(parseFloat(v(B.total).toFixed(2)));tBase.push(95.0);}
+
+  const trendChart=new Chart(document.getElementById('trendChart'),{
+    type:'line',
+    data:{labels:tLabels,datasets:[
+      {label:'Total emission',data:tActual,borderColor:'#1d4ed8',borderWidth:1.5,pointRadius:0,tension:0.4,fill:false},
+      {label:'Baseline emission',data:tBase,borderColor:'#d1d5db',borderWidth:1,borderDash:[4,3],pointRadius:0,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:74,max:100,ticks:{font:{size:10}},grid:{color:'#f5f5f5'}},x:{ticks:{maxTicksLimit:8,font:{size:10}},grid:{display:false}}}}
+  });
+
+  let splitDone=false,baseDone=false;
+
+  function initSplit(){
+    splitDone=true;
+    const lb=[],co=[],el=[],di=[];
+    for(let i=23;i>=0;i--){lb.push(i===0?'Now':`${i}h`);co.push(parseFloat(v(B.coal).toFixed(2)));el.push(parseFloat(v(B.elec).toFixed(2)));di.push(parseFloat(v(B.diesel).toFixed(3)));}
+    new Chart(document.getElementById('splitChart'),{
+      type:'line',
+      data:{labels:lb,datasets:[
+        {label:'Coal',data:co,borderColor:'#1d4ed8',backgroundColor:'rgba(29,78,216,0.06)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.3},
+        {label:'Electricity',data:el,borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,0.06)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.3},
+        {label:'Diesel',data:di,borderColor:'#d97706',backgroundColor:'rgba(217,119,6,0.06)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.3}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{size:10}},grid:{color:'#f5f5f5'}},x:{ticks:{maxTicksLimit:8,font:{size:10}},grid:{display:false}}}}
+    });
+  }
+
+  function initBase(){
+    baseDone=true;
+    new Chart(document.getElementById('baseChart'),{
+      type:'bar',
+      data:{labels:['Coal CO₂','Electricity CO₂','Diesel CO₂','Total emission','Baseline emission'],
+        datasets:[{data:[37.1,41.0,0.804,78.9,95.0],backgroundColor:['#1d4ed8','#7c3aed','#d97706','#111','#e5e7eb'],borderRadius:4,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{size:10}},grid:{color:'#f5f5f5'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}
+    });
+  }
+
+  function ts(){return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+
+  function tick(){
+    const t=parseFloat(v(B.total).toFixed(2));
+    const c=parseFloat(v(B.coal).toFixed(2));
+    const e=parseFloat(v(B.elec).toFixed(2));
+    const d=parseFloat(v(B.diesel).toFixed(3));
+    const r=parseFloat((95-t).toFixed(2));
+
+    document.getElementById('kv-total').textContent=t.toFixed(1);
+    document.getElementById('kv-red').textContent=r.toFixed(1);
+    if(document.getElementById('kv-act2')) document.getElementById('kv-act2').textContent=t.toFixed(1);
+    if(document.getElementById('kv-red2')) document.getElementById('kv-red2').textContent=r.toFixed(1);
+    if(document.getElementById('kv-coal')) document.getElementById('kv-coal').textContent=c.toFixed(1);
+    if(document.getElementById('kv-elec')) document.getElementById('kv-elec').textContent=e.toFixed(1);
+    if(document.getElementById('kv-diesel')) document.getElementById('kv-diesel').textContent=d.toFixed(3);
+
+    const pC=Math.round(c/t*100), pE=Math.round(e/t*100), pD=100-pC-pE;
+    document.getElementById('bc').style.width=pC+'%';
+    document.getElementById('be').style.width=pE+'%';
+    document.getElementById('bd').style.width=Math.max(1,pD)+'%';
+    document.getElementById('pc').textContent=pC+'%';
+    document.getElementById('pe').textContent=pE+'%';
+    document.getElementById('pd').textContent=pD+'%';
+
+    tActual.push(t); tActual.shift();
+    trendChart.update('none');
+
+    const now=ts();
+    ['ts1','ts2','ts3','ts4','ts5'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.textContent=now;
+    });
+  }
+
+  tick();
+  setInterval(tick,4000);
+</script>
